@@ -34,7 +34,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Read once</title>
+		<title>VisitOnce</title>
 
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
