@@ -72,6 +72,15 @@
 					padding: 0 20px !important;
 				}
 			}
+
+			code {
+				margin: 0 5px;
+				padding: 5px;
+
+				border-radius: 5px;
+
+				background: lightgray;
+			}
 		</style>
 	</head>
 
