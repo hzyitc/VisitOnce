@@ -3,9 +3,10 @@
 
 	$k = $_GET["k"] ?? "";
 	$confirm = boolval($_GET["confirm"] ?? false);
+	$filename = rawurldecode($_GET["filename"] ?? $k);
 
 	$content = (function() {
-		global $k, $confirm;
+		global $k, $confirm, $filename;
 
 		if($k == "")
 			return i18n("index.md");
@@ -22,12 +23,15 @@
 		if(!$confirm)
 			return i18n("confirm.md");
 
+		header('Content-Type: application/octet-stream');
+		header("Content-Disposition: attachment; filename=\"" . rawurlencode($filename) . "\""); 
 		echo(file_get_contents($path));
 		unlink($path);
 		exit();
 	})();
 
 	$loading = i18n("loading.md");
+	$invalid = i18n("invalid.md");
 	$error = i18n("error.md");
 ?>
 
@@ -89,25 +93,38 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 		<script>
+			const args = new URLSearchParams(window.location.search);
+
 			function load(str) {
 				document.getElementById('content').innerHTML = marked.parse(str);
 			}
 
 			function confirm() {
-				document.getElementById('content').innerHTML = marked.parse(<?php echo(json_encode($loading)); ?>);
+				load(<?php echo(json_encode($loading)); ?>);
 
-				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function() {
-					if(this.readyState == 4) {
-						if(this.status == 200) {
-							load(xhr.responseText);
-						} else {
-							load(<?php echo(json_encode($error)); ?>);
-						}
-					}
-				};
-				xhr.open("GET", "?k=<?php echo($k); ?>&confirm=true", true);
-				xhr.send();
+				const type = args.get('type') ?? "markdown";
+				switch(type) {
+					case "markdown":
+						var xhr = new XMLHttpRequest();
+						xhr.onreadystatechange = function() {
+							if(this.readyState == 4) {
+								if(this.status == 200) {
+									load(xhr.responseText);
+								} else {
+									load(<?php echo(json_encode($error)); ?>);
+								}
+							}
+						};
+						xhr.open("GET", window.location.search + "&confirm=true", true);
+						xhr.send();
+						break;
+					case "download":
+						window.location.replace(window.location.search + "&confirm=true");
+						break;
+					default:
+						load(<?php echo(json_encode($invalid)); ?>);
+						break;
+				}
 			}
 
 			load(<?php echo(json_encode($content)); ?>);
