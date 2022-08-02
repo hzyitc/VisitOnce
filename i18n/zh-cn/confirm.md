@@ -1,5 +1,5 @@
-# 打开并删除?
+# 访问并删除?
 
-**请注意，该文本在打开后将被删除**
+**请注意，该文件在访问后将被删除**
 
-<button name="button" onclick="javascript:confirm();">打开并删除</button>
+<button name="button" onclick="javascript:confirm();">访问并删除</button>
